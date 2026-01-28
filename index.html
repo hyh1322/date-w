@@ -1,0 +1,2471 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日期星期天气显示工具</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Arial', 'PingFang SC', sans-serif;
+        }
+        
+        body {
+            background-color: #0c1a2d;
+            color: #21ee1d;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            transition: all 0.5s ease;
+        }
+        
+        .container {
+            max-width: 1300px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 60px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 10px;
+            transition: opacity 0.5s ease;
+        }
+        
+        .header h1 {
+            font-size: 5.5rem;
+            margin-bottom: 20px;
+            color: #21ee1d;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            transition: all 0.5s ease;
+        }
+        
+        .header p {
+            font-size: 1rem;
+            opacity: 0.9;
+            transition: opacity 0.5s ease;
+        }
+        
+        .date-display {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(15, 23, 42, 0.85);
+            border-radius: 35px;
+            padding: 70px 80px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(15px);
+            width: 100%;
+            max-width: 1200px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            transition: all 0.5s ease;
+        }
+        
+        .date-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            flex-wrap: nowrap;
+            gap: 0;
+            margin-bottom: 80px;
+            width: 100%;
+        }
+        
+        .date-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            flex: 1;
+            min-height: 320px;
+        }
+        
+        .date-label {
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            color: #cbd5e1;
+            font-weight: 800;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            height: 60px;
+            display: flex;
+            align-items: flex-end;
+            text-shadow: 0 3px 15px rgba(0, 0, 0, 0.4);
+            transition: all 0.5s ease;
+        }
+        
+        .date-value {
+            font-size: 200px;
+            font-weight: 900;
+            line-height: 1;
+            transition: all 0.3s ease;
+            height: 220px;
+            display: flex;
+            align-items: center;
+            color: white;
+            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        }
+        
+        .year-value {
+            color: white;
+        }
+        
+        .month-value {
+            color: white;
+        }
+        
+        .day-value {
+            color: white;
+        }
+        
+        .separator {
+            font-size: 140px;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 300;
+            margin: 0 40px;
+            align-self: center;
+            line-height: 1;
+            height: 220px;
+            display: flex;
+            align-items: center;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .weekday-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            gap: 0;
+            margin-bottom: 80px;
+        }
+        
+        .weekday-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 50px;
+        }
+        
+        .weekday-label {
+            font-size: 180px;
+            color: #cbd5e1;
+            font-weight: 900;
+            text-transform: uppercase;
+            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            transition: all 0.5s ease;
+        }
+        
+        .weekday-value {
+            font-size: 180px;
+            font-weight: 900;
+            color: white;
+            transition: all 0.3s ease;
+            letter-spacing: 5px;
+            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        }
+        
+        /* 实时时间样式 - 已调大字体 */
+        .time-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            gap: 10px;
+        }
+        
+        .time-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+        }
+        
+        .time-label {
+            font-size: 140px;
+            color: #cbd5e1;
+            font-weight: 900;
+            text-transform: uppercase;
+            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            transition: all 0.5s ease;
+        }
+        
+        .time-value {
+            font-size: 140px;
+            font-weight: 900;
+            color: white;
+            transition: all 0.3s ease;
+            letter-spacing: 5px;
+            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        }
+        
+        .time-separator {
+            font-size: 120px;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 300;
+            margin: 0 20px;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            animation: blink 1s infinite;
+            align-self: flex-end;
+            margin-bottom: 30px;
+        }
+        
+        /* 天气显示区域样式 */
+        .weather-section {
+            width: 100%;
+            max-width: 1200px;
+            background: rgba(15, 23, 42, 0.85);
+            border-radius: 35px;
+            padding: 50px 60px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            transition: all 0.5s ease;
+            margin-bottom: 20px;
+        }
+        
+        .weather-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            text-align: center;
+            color: white;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            transition: all 0.5s ease;
+        }
+        
+        .current-weather {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 60px;
+        }
+        
+        .current-weather-main {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 30px;
+        }
+        
+        .weather-icon {
+            font-size: 120px;
+            color: white;
+            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 140px;
+            height: 140px;
+        }
+        
+        /* 优化后的彩色天气图标样式 - 桌面风格 */
+        .weather-sunny { color: #FFD700 !important; }
+        .weather-sunny::before {
+            content: '';
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, rgba(255,215,0,0.3) 0%, rgba(255,215,0,0.1) 50%, transparent 70%);
+            border-radius: 50%;
+            z-index: 0;
+        }
+        
+        .weather-sunny i {
+            z-index: 1;
+            position: relative;
+            filter: drop-shadow(0 0 10px rgba(255,215,0,0.5));
+        }
+        
+        .weather-partly-cloudy { color: #FFD700 !important; }
+        .weather-partly-cloudy::before {
+            content: '';
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(255,215,0,0.2) 0%, transparent 60%);
+            border-radius: 50%;
+            z-index: 0;
+        }
+        
+        .weather-partly-cloudy i {
+            z-index: 1;
+            position: relative;
+            filter: drop-shadow(0 0 8px rgba(255,215,0,0.4));
+        }
+        
+        .weather-cloudy { color: #B0B0B0 !important; }
+        .weather-cloudy i {
+            filter: drop-shadow(0 0 8px rgba(176,176,176,0.4));
+        }
+        
+        .weather-rainy { color: #5DADE2 !important; }
+        .weather-rainy::before {
+            content: '';
+            position: absolute;
+            width: 120px;
+            height: 60px;
+            background: linear-gradient(to bottom, rgba(93,173,226,0.2), transparent);
+            bottom: -10px;
+            border-radius: 50%;
+            z-index: 0;
+        }
+        
+        .weather-rainy i {
+            z-index: 1;
+            position: relative;
+            filter: drop-shadow(0 0 10px rgba(93,173,226,0.5));
+        }
+        
+        .weather-thunderstorm { color: #8E44AD !important; }
+        .weather-thunderstorm i {
+            filter: drop-shadow(0 0 10px rgba(142,68,173,0.5));
+            animation: thunder 2s infinite;
+        }
+        
+        .weather-snowy { color: #E8F8F5 !important; }
+        .weather-snowy::before {
+            content: '';
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, rgba(232,248,245,0.2) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: 0;
+        }
+        
+        .weather-snowy i {
+            z-index: 1;
+            position: relative;
+            filter: drop-shadow(0 0 10px rgba(232,248,245,0.5));
+        }
+        
+        .weather-fog { color: #D5DBDB !important; }
+        .weather-fog i {
+            filter: drop-shadow(0 0 8px rgba(213,219,219,0.4));
+        }
+        
+        .weather-windy { color: #48C9B0 !important; }
+        .weather-windy i {
+            animation: wind 3s infinite ease-in-out;
+            filter: drop-shadow(0 0 8px rgba(72,201,176,0.4));
+        }
+        
+        .weather-clear-night { color: #F4D03F !important; }
+        .weather-clear-night::before {
+            content: '';
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(244,208,63,0.2) 0%, transparent 60%);
+            border-radius: 50%;
+            z-index: 0;
+        }
+        
+        .weather-clear-night i {
+            z-index: 1;
+            position: relative;
+            filter: drop-shadow(0 0 10px rgba(244,208,63,0.5));
+        }
+        
+        @keyframes thunder {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+            75% { opacity: 1; transform: scale(1); }
+        }
+        
+        @keyframes wind {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(5deg); }
+            75% { transform: rotate(-5deg); }
+        }
+        
+        .weather-temp {
+            font-size: 120px;
+            font-weight: 900;
+            color: white;
+            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        }
+        
+        .weather-info {
+            font-size: 2rem;
+            color: #cbd5e1;
+            text-align: center;
+            margin-bottom: 15px;
+            text-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .weather-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            width: 100%;
+            max-width: 800px;
+        }
+        
+        .weather-detail-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .weather-detail-label {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            margin-bottom: 10px;
+        }
+        
+        .weather-detail-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .forecast-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            width: 100%;
+        }
+        
+        .forecast-day {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .forecast-day:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .forecast-date {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 20px;
+            text-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .forecast-weather {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .forecast-icon {
+            font-size: 70px;
+            color: white;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            height: 80px;
+        }
+        
+        /* 预报图标样式 */
+        .forecast-sunny { color: #FFD700 !important; }
+        .forecast-partly-cloudy { color: #FFD700 !important; }
+        .forecast-cloudy { color: #B0B0B0 !important; }
+        .forecast-rainy { color: #5DADE2 !important; }
+        .forecast-thunderstorm { color: #8E44AD !important; }
+        .forecast-snowy { color: #E8F8F5 !important; }
+        .forecast-fog { color: #D5DBDB !important; }
+        .forecast-windy { color: #48C9B0 !important; }
+        .forecast-clear-night { color: #F4D03F !important; }
+        
+        .forecast-temp {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: white;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        }
+        
+        .forecast-desc {
+            font-size: 1.5rem;
+            color: #cbd5e1;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .forecast-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            width: 100%;
+        }
+        
+        .forecast-detail-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+        }
+        
+        .forecast-detail-label {
+            font-size: 1rem;
+            color: #94a3b8;
+            margin-bottom: 5px;
+        }
+        
+        .forecast-detail-value {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: white;
+        }
+        
+        /* 全屏模式下的天气显示样式 */
+        body.fullscreen-mode .fullscreen-weather {
+            display: flex !important;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 90%;
+            margin-top: 3vh;
+            padding: 2vh 3vw;
+            background: rgba(15, 23, 42, 0.85);
+            border-radius: 25px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        body.fullscreen-mode .fullscreen-weather-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4vw;
+            width: 100%;
+        }
+        
+        body.fullscreen-mode .fullscreen-weather-icon {
+            font-size: 10vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        body.fullscreen-mode .fullscreen-weather-temp {
+            font-size: 12vh;
+            font-weight: 900;
+            color: white;
+            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        }
+        
+        body.fullscreen-mode .fullscreen-weather-info {
+            font-size: 4vh;
+            color: #cbd5e1;
+            text-align: center;
+            margin-top: 2vh;
+            text-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        body.fullscreen-mode .fullscreen-weather-details {
+            display: flex;
+            gap: 3vw;
+            margin-top: 2vh;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        body.fullscreen-mode .fullscreen-weather-detail {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1.5vh 2vw;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            min-width: 15vw;
+        }
+        
+        body.fullscreen-mode .fullscreen-weather-detail-label {
+            font-size: 2.5vh;
+            color: #94a3b8;
+            margin-bottom: 0.5vh;
+        }
+        
+        body.fullscreen-mode .fullscreen-weather-detail-value {
+            font-size: 3.5vh;
+            font-weight: 700;
+            color: white;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+        
+        .themes-section {
+            width: 100%;
+            max-width: 1200px;
+            background: rgba(15, 23, 42, 0.85);
+            border-radius: 35px;
+            padding: 50px 60px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            transition: all 0.5s ease;
+        }
+        
+        .themes-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            text-align: center;
+            color: white;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            transition: all 0.5s ease;
+        }
+        
+        .theme-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+        
+        .theme-btn {
+            padding: 25px 20px;
+            border: none;
+            border-radius: 25px;
+            font-weight: 800;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            color: #0f172a;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .theme-btn:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+        }
+        
+        .theme-btn.active {
+            transform: scale(1.1);
+            box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.9), 0 25px 50px rgba(0, 0, 0, 0.4);
+        }
+        
+        .theme-btn i {
+            font-size: 2.5rem;
+        }
+        
+        /* 全屏按钮样式 */
+        .fullscreen-btn {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            z-index: 1000;
+            background: rgba(15, 23, 42, 0.9);
+            color: #06b6d4;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .fullscreen-btn:hover {
+            background: rgba(15, 23, 42, 1);
+            transform: scale(1.1);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .fullscreen-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .fullscreen-btn i {
+            transition: transform 0.3s ease;
+        }
+        
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 1.2rem;
+            color: #94a3b8;
+            transition: opacity 0.5s ease;
+        }
+        
+        /* 全屏模式样式 */
+        body.fullscreen-mode {
+            padding: 0;
+            justify-content: center;
+        }
+        
+        body.fullscreen-mode .container {
+            gap: 0;
+            max-width: 100%;
+            width: 100%;
+            height: 100vh;
+            justify-content: center;
+        }
+        
+        body.fullscreen-mode .date-display {
+            max-width: 95%;
+            border-radius: 25px;
+            padding: 5vh 5vw;
+            margin: 0;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            width: 95%;
+            height: 90vh;
+        }
+        
+        /* 全屏时隐藏其他元素 */
+        body.fullscreen-mode .header,
+        body.fullscreen-mode .weather-section,
+        body.fullscreen-mode .themes-section,
+        body.fullscreen-mode .footer {
+            display: none !important;
+            opacity: 0;
+            height: 0;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        /* 全屏时日期窗口充满屏幕 */
+        body.fullscreen-mode .date-container {
+            margin-bottom: 5vh;
+        }
+        
+        body.fullscreen-mode .date-value {
+            font-size: 20vh;
+            height: 25vh;
+        }
+        
+        body.fullscreen-mode .weekday-value,
+        body.fullscreen-mode .weekday-label {
+            font-size: 18vh;
+        }
+        
+        body.fullscreen-mode .separator {
+            font-size: 16vh;
+            height: 25vh;
+        }
+        
+        body.fullscreen-mode .date-label {
+            font-size: 4vh;
+            margin-bottom: 2vh;
+            height: auto;
+        }
+        
+        /* 全屏模式下的时间样式 */
+        body.fullscreen-mode .time-value,
+        body.fullscreen-mode .time-label {
+            font-size: 16vh;
+        }
+        
+        body.fullscreen-mode .time-separator {
+            font-size: 14vh;
+        }
+        
+        body.fullscreen-mode .weekday-container {
+            margin-bottom: 5vh;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 1400px) {
+            .date-value {
+                font-size: 180px;
+                height: 200px;
+            }
+            
+            .separator {
+                font-size: 120px;
+                height: 200px;
+                margin: 0 30px;
+            }
+            
+            .weekday-value, .weekday-label {
+                font-size: 160px;
+            }
+            
+            .time-value, .time-label {
+                font-size: 120px;
+            }
+            
+            .time-separator {
+                font-size: 100px;
+            }
+            
+            .date-label {
+                font-size: 2.2rem;
+            }
+            
+            .weather-icon {
+                font-size: 100px;
+            }
+            
+            .weather-temp {
+                font-size: 100px;
+            }
+            
+            .weather-info {
+                font-size: 1.8rem;
+            }
+            
+            body.fullscreen-mode .date-value {
+                font-size: 18vh;
+                height: 22vh;
+            }
+            
+            body.fullscreen-mode .weekday-value,
+            body.fullscreen-mode .weekday-label {
+                font-size: 16vh;
+            }
+            
+            body.fullscreen-mode .time-value,
+            body.fullscreen-mode .time-label {
+                font-size: 14vh;
+            }
+            
+            body.fullscreen-mode .time-separator {
+                font-size: 12vh;
+            }
+        }
+        
+        @media (max-width: 1200px) {
+            .date-value {
+                font-size: 160px;
+                height: 180px;
+            }
+            
+            .separator {
+                font-size: 100px;
+                height: 180px;
+                margin: 0 25px;
+            }
+            
+            .weekday-value, .weekday-label {
+                font-size: 140px;
+            }
+            
+            .time-value, .time-label {
+                font-size: 100px;
+            }
+            
+            .time-separator {
+                font-size: 85px;
+            }
+            
+            .date-display {
+                padding: 60px 50px;
+            }
+            
+            .weather-icon {
+                font-size: 90px;
+            }
+            
+            .weather-temp {
+                font-size: 90px;
+            }
+            
+            .weather-info {
+                font-size: 1.6rem;
+            }
+            
+            .forecast-container {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+            
+            body.fullscreen-mode .date-value {
+                font-size: 16vh;
+                height: 20vh;
+            }
+            
+            body.fullscreen-mode .weekday-value,
+            body.fullscreen-mode .weekday-label {
+                font-size: 14vh;
+            }
+            
+            body.fullscreen-mode .time-value,
+            body.fullscreen-mode .time-label {
+                font-size: 12vh;
+            }
+            
+            body.fullscreen-mode .time-separator {
+                font-size: 10vh;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .date-value {
+                font-size: 140px;
+                height: 160px;
+            }
+            
+            .separator {
+                font-size: 80px;
+                height: 160px;
+                margin: 0 20px;
+            }
+            
+            .weekday-value, .weekday-label {
+                font-size: 120px;
+            }
+            
+            .time-value, .time-label {
+                font-size: 90px;
+            }
+            
+            .time-separator {
+                font-size: 75px;
+            }
+            
+            .theme-buttons {
+                grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+                gap: 25px;
+            }
+            
+            .date-display {
+                padding: 50px 40px;
+            }
+            
+            .date-label {
+                font-size: 2rem;
+            }
+            
+            .weather-section {
+                padding: 40px 30px;
+            }
+            
+            .weather-icon {
+                font-size: 80px;
+            }
+            
+            .weather-temp {
+                font-size: 80px;
+            }
+            
+            .weather-info {
+                font-size: 1.4rem;
+            }
+            
+            .forecast-container {
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            }
+            
+            body.fullscreen-mode .date-value {
+                font-size: 14vh;
+                height: 18vh;
+            }
+            
+            body.fullscreen-mode .weekday-value,
+            body.fullscreen-mode .weekday-label {
+                font-size: 12vh;
+            }
+            
+            body.fullscreen-mode .time-value,
+            body.fullscreen-mode .time-label {
+                font-size: 10vh;
+            }
+            
+            body.fullscreen-mode .time-separator {
+                font-size: 8vh;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .date-value {
+                font-size: 120px;
+                height: 140px;
+            }
+            
+            .separator {
+                font-size: 70px;
+                height: 140px;
+                margin: 0 15px;
+            }
+            
+            .weekday-value, .weekday-label {
+                font-size: 100px;
+            }
+            
+            .time-value, .time-label {
+                font-size: 80px;
+            }
+            
+            .time-separator {
+                font-size: 65px;
+            }
+            
+            .date-label {
+                font-size: 1.8rem;
+                margin-bottom: 30px;
+            }
+            
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .themes-section h2,
+            .weather-section h2 {
+                font-size: 2rem;
+            }
+            
+            .date-display {
+                padding: 40px 30px;
+            }
+            
+            .date-container {
+                margin-bottom: 60px;
+            }
+            
+            .weekday-container {
+                margin-bottom: 60px;
+            }
+            
+            .weekday-item {
+                gap: 40px;
+            }
+            
+            .time-item {
+                gap: 20px;
+            }
+            
+            .weather-section {
+                padding: 30px 25px;
+            }
+            
+            .weather-icon {
+                font-size: 70px;
+            }
+            
+            .weather-temp {
+                font-size: 70px;
+            }
+            
+            .weather-info {
+                font-size: 1.3rem;
+            }
+            
+            .forecast-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .fullscreen-btn {
+                top: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+            }
+            
+            body.fullscreen-mode .date-value {
+                font-size: 12vh;
+                height: 16vh;
+            }
+            
+            body.fullscreen-mode .weekday-value,
+            body.fullscreen-mode .weekday-label {
+                font-size: 10vh;
+            }
+            
+            body.fullscreen-mode .time-value,
+            body.fullscreen-mode .time-label {
+                font-size: 8vh;
+            }
+            
+            body.fullscreen-mode .time-separator {
+                font-size: 7vh;
+            }
+            
+            /* 响应式全屏天气调整 */
+            body.fullscreen-mode .fullscreen-weather-content {
+                flex-direction: column;
+                gap: 2vh;
+            }
+            
+            body.fullscreen-mode .fullscreen-weather-icon {
+                font-size: 8vh;
+            }
+            
+            body.fullscreen-mode .fullscreen-weather-temp {
+                font-size: 9vh;
+            }
+            
+            body.fullscreen-mode .fullscreen-weather-info {
+                font-size: 3vh;
+            }
+            
+            body.fullscreen-mode .fullscreen-weather-details {
+                gap: 2vh;
+            }
+            
+            body.fullscreen-mode .fullscreen-weather-detail {
+                min-width: 40vw;
+            }
+        }
+        
+        @media (max-width: 650px) {
+            .date-container {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+            
+            .date-item {
+                min-height: auto;
+                flex-direction: row;
+                justify-content: center;
+                width: 100%;
+                margin-bottom: 30px;
+            }
+            
+            .date-label {
+                width: 100px;
+                margin-bottom: 0;
+                margin-right: 30px;
+                justify-content: flex-end;
+                height: auto;
+            }
+            
+            .date-value {
+                height: auto;
+                font-size: 120px;
+            }
+            
+            .separator {
+                display: none;
+            }
+            
+            .weekday-item {
+                flex-direction: row;
+                justify-content: center;
+                width: 100%;
+                gap: 30px;
+            }
+            
+            .time-item {
+                flex-direction: row;
+                justify-content: center;
+                width: 100%;
+                gap: 15px;
+            }
+            
+            .current-weather-main {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .weather-details {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            body.fullscreen-mode .date-container {
+                flex-direction: column;
+            }
+            
+            body.fullscreen-mode .date-item {
+                flex-direction: row;
+            }
+            
+            body.fullscreen-mode .separator {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .date-value {
+                font-size: 100px;
+            }
+            
+            .weekday-value, .weekday-label {
+                font-size: 90px;
+            }
+            
+            .time-value, .time-label {
+                font-size: 60px;
+            }
+            
+            .time-separator {
+                font-size: 50px;
+            }
+            
+            .date-label {
+                font-size: 1.6rem;
+            }
+            
+            .theme-buttons {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .themes-section h2,
+            .weather-section h2 {
+                font-size: 1.8rem;
+            }
+            
+            .date-display {
+                padding: 30px 20px;
+            }
+            
+            .themes-section,
+            .weather-section {
+                padding: 30px 20px;
+            }
+            
+            .weekday-item {
+                gap: 20px;
+            }
+            
+            .time-item {
+                gap: 10px;
+            }
+            
+            .weather-icon {
+                font-size: 60px;
+            }
+            
+            .weather-temp {
+                font-size: 60px;
+            }
+            
+            .weather-info {
+                font-size: 1.2rem;
+            }
+            
+            .forecast-date {
+                font-size: 1.5rem;
+            }
+            
+            .forecast-temp {
+                font-size: 2rem;
+            }
+            
+            .forecast-desc {
+                font-size: 1.3rem;
+            }
+            
+            .fullscreen-btn {
+                top: 15px;
+                right: 15px;
+                width: 45px;
+                height: 45px;
+                font-size: 1.3rem;
+            }
+            
+            body.fullscreen-mode .date-value {
+                font-size: 10vh;
+            }
+            
+            body.fullscreen-mode .weekday-value,
+            body.fullscreen-mode .weekday-label {
+                font-size: 9vh;
+            }
+            
+            body.fullscreen-mode .time-value,
+            body.fullscreen-mode .time-label {
+                font-size: 6vh;
+            }
+            
+            body.fullscreen-mode .time-separator {
+                font-size: 5vh;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .date-value {
+                font-size: 80px;
+            }
+            
+            .weekday-value, .weekday-label {
+                font-size: 70px;
+            }
+            
+            .time-value, .time-label {
+                font-size: 50px;
+            }
+            
+            .time-separator {
+                font-size: 40px;
+            }
+            
+            .weekday-item {
+                gap: 15px;
+            }
+            
+            .time-item {
+                gap: 8px;
+            }
+            
+            .weather-details {
+                grid-template-columns: 1fr;
+            }
+            
+            body.fullscreen-mode .date-value {
+                font-size: 8vh;
+            }
+            
+            body.fullscreen-mode .weekday-value,
+            body.fullscreen-mode .weekday-label {
+                font-size: 7vh;
+            }
+            
+            body.fullscreen-mode .time-value,
+            body.fullscreen-mode .time-label {
+                font-size: 5vh;
+            }
+            
+            body.fullscreen-mode .time-separator {
+                font-size: 4vh;
+            }
+        }
+        
+        /* 全屏时隐藏天气版块（原本的天气区域） */
+        body.fullscreen-mode .weather-section {
+            display: none !important;
+        }
+        
+        /* 全屏时显示全屏天气区域 */
+        .fullscreen-weather {
+            display: none;
+        }
+        
+        /* 加载动画 */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 300px;
+            width: 100%;
+        }
+        
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            border-top: 5px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 全屏按钮 -->
+    <button class="fullscreen-btn" id="fullscreenBtn" title="切换全屏模式">
+        <i class="fas fa-expand"></i>
+    </button>
+    
+    <div class="container">
+        <div class="header">
+            <h1>东莞市佳迪新材料有限公司</h1>
+            <p>———————————————————————————————————————————————————————————————————————</p>
+        </div>
+        
+        <div class="date-display">
+            <div class="date-container">
+                <div class="date-item">
+                    <div class="date-label">年</div>
+                    <div class="date-value year-value" id="year">2023</div>
+                </div>
+                
+                <span class="separator">-</span>
+                
+                <div class="date-item">
+                    <div class="date-label">月</div>
+                    <div class="date-value month-value" id="month">10</div>
+                </div>
+                
+                <span class="separator">-</span>
+                
+                <div class="date-item">
+                    <div class="date-label">日</div>
+                    <div class="date-value day-value" id="day">27</div>
+                </div>
+            </div>
+            
+            <div class="weekday-container">
+                <div class="weekday-item">
+                    <div class="weekday-label">星期</div>
+                    <div class="weekday-value" id="weekday">五</div>
+                </div>
+            </div>
+            
+            <!-- 实时时间显示 -->
+            <div class="time-container">
+                <div class="time-item">
+                    <div class="time-label"></div>
+                    <div class="time-value" id="hours">12</div>
+                    <span class="time-separator">:</span>
+                    <div class="time-value" id="minutes">00</div>
+                    <span class="time-separator">:</span>
+                    <div class="time-value" id="seconds">00</div>
+                </div>
+            </div>
+            
+            <!-- 全屏模式下的天气显示区域 -->
+            <div class="fullscreen-weather" id="fullscreen-weather">
+                <div class="fullscreen-weather-content">
+                    <div class="fullscreen-weather-icon" id="fullscreen-weather-icon">
+                        <i class="fas fa-cloud-sun"></i>
+                    </div>
+                    <div class="fullscreen-weather-temp" id="fullscreen-weather-temp">--°C</div>
+                </div>
+                <div class="fullscreen-weather-info" id="fullscreen-weather-info">加载中...</div>
+                <div class="fullscreen-weather-details" id="fullscreen-weather-details">
+                    <!-- 天气详情将通过JavaScript动态生成 -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- 天气显示区域 -->
+        <div class="weather-section" id="weather-section">
+            <h2><i class="fas fa-cloud-sun"></i> 实时天气与预报</h2>
+            
+            <div class="current-weather" id="current-weather">
+                <!-- 当前天气将通过JavaScript动态生成 -->
+                <div class="loading">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+            
+            <div class="forecast-container" id="forecast-container">
+                <!-- 天气预报将通过JavaScript动态生成 -->
+            </div>
+        </div>
+        
+        <div class="themes-section">
+            <h2><i class="fas fa-palette"></i> 选择主题颜色</h2>
+            <div class="theme-buttons" id="theme-buttons">
+                <!-- 主题按钮将通过JavaScript动态生成 -->
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2026 东莞市佳迪新材料有限公司 | 数字大小: 200像素 | 已提供8种冷色调主题 | 支持全屏模式 | 实时时间显示 | 天气信息: 心知天气 API</p>
+        </div>
+    </div>
+
+    <script>
+        // 获取DOM元素
+        const yearElement = document.getElementById('year');
+        const monthElement = document.getElementById('month');
+        const dayElement = document.getElementById('day');
+        const weekdayElement = document.getElementById('weekday');
+        const hoursElement = document.getElementById('hours');
+        const minutesElement = document.getElementById('minutes');
+        const secondsElement = document.getElementById('seconds');
+        const themeButtonsContainer = document.getElementById('theme-buttons');
+        const bodyElement = document.body;
+        const dateDisplayElement = document.querySelector('.date-display');
+        const themesSectionElement = document.querySelector('.themes-section');
+        const weatherSectionElement = document.getElementById('weather-section');
+        const currentWeatherElement = document.getElementById('current-weather');
+        const forecastContainerElement = document.getElementById('forecast-container');
+        const headerElement = document.querySelector('.header');
+        const footerElement = document.querySelector('.footer');
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+        const fullscreenIcon = fullscreenBtn.querySelector('i');
+        
+        // 全屏天气显示元素
+        const fullscreenWeatherElement = document.getElementById('fullscreen-weather');
+        const fullscreenWeatherIconElement = document.getElementById('fullscreen-weather-icon');
+        const fullscreenWeatherTempElement = document.getElementById('fullscreen-weather-temp');
+        const fullscreenWeatherInfoElement = document.getElementById('fullscreen-weather-info');
+        const fullscreenWeatherDetailsElement = document.getElementById('fullscreen-weather-details');
+        
+        // 星期映射
+        const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+        
+        // 心知天气API配置 - 修复API密钥问题
+       const XINZHI_API_KEY = 'S3c7iWQBjwa1UJA9v'; // 您的API公钥
+const CITY_NAME = 'dongguan'; // 使用城市拼音
+
+        
+        // 存储最后一次成功的天气数据
+        let lastWeatherData = null;
+        let lastUpdateTime = null;
+        
+        // 主题定义 - 使用您指定的颜色
+        const themes = [
+            {
+                id: 'theme1',
+                name: '深海蓝',
+                bgColor: '#0c1a2d',
+                labelColor: '#93c5fd',
+                buttonColor: '#1e293b',
+                buttonTextColor: '#bfdbfe',
+                icon: 'fas fa-water'
+            },
+            {
+                id: 'theme2',
+                name: '冰川蓝',
+                bgColor: '#0c4a6e',
+                labelColor: '#bae6fd',
+                buttonColor: '#164e63',
+                buttonTextColor: '#e0f2fe',
+                icon: 'fas fa-icicles'
+            },
+            {
+                id: 'theme3',
+                name: '冰晶紫',
+                bgColor: '#1e1b4b',
+                labelColor: '#ddd6fd',
+                buttonColor: '#312e81',
+                buttonTextColor: '#ede9fe',
+                icon: 'fas fa-snowflake'
+            },
+            {
+                id: 'theme4',
+                name: '深蓝紫',
+                bgColor: '#1e1b4b',
+                labelColor: '#a5b4fc',
+                buttonColor: '#312e81',
+                buttonTextColor: '#c7d2fe',
+                icon: 'fas fa-moon'
+            },
+            {
+                id: 'theme5',
+                name: '冷灰',
+                bgColor: '#1f2937',
+                labelColor: '#e5e7eb',
+                buttonColor: '#374151',
+                buttonTextColor: '#f9fafb',
+                icon: 'fas fa-cloud'
+            },
+            {
+                id: 'theme6',
+                name: '青绿色',
+                bgColor: '#134e4a',
+                labelColor: '#5eead4',
+                buttonColor: '#115e59',
+                buttonTextColor: '#ccfbf1',
+                icon: 'fas fa-feather'
+            },
+            {
+                id: 'theme7',
+                name: '蓝绿色',
+                bgColor: '#164e63',
+                labelColor: '#67e8f9',
+                buttonColor: '#0e7490',
+                buttonTextColor: '#cffafe',
+                icon: 'fas fa-fish'
+            },
+            {
+                id: 'theme8',
+                name: '薄荷绿',
+                bgColor: '#064e3b',
+                labelColor: '#6ee7b7',
+                buttonColor: '#047857',
+                buttonTextColor: '#d1fae5',
+                icon: 'fas fa-leaf'
+            }
+        ];
+        
+        // 心知天气代码到Font Awesome图标映射
+        const xinzhiWeatherCodeToIcon = {
+            // 晴天
+            'CLEAR_DAY': { 
+                icon: 'fas fa-sun', 
+                class: 'weather-sunny',
+                description: '晴天'
+            },
+            'CLEAR_NIGHT': { 
+                icon: 'fas fa-moon', 
+                class: 'weather-clear-night',
+                description: '晴夜'
+            },
+            // 多云
+            'PARTLY_CLOUDY_DAY': { 
+                icon: 'fas fa-cloud-sun', 
+                class: 'weather-partly-cloudy',
+                description: '多云'
+            },
+            'PARTLY_CLOUDY_NIGHT': { 
+                icon: 'fas fa-cloud-moon', 
+                class: 'weather-partly-cloudy',
+                description: '多云'
+            },
+            // 阴天
+            'CLOUDY': { 
+                icon: 'fas fa-cloud', 
+                class: 'weather-cloudy',
+                description: '阴天'
+            },
+            // 雨天
+            'LIGHT_RAIN': { 
+                icon: 'fas fa-cloud-rain', 
+                class: 'weather-rainy',
+                description: '小雨'
+            },
+            'MODERATE_RAIN': { 
+                icon: 'fas fa-cloud-showers-heavy', 
+                class: 'weather-rainy',
+                description: '中雨'
+            },
+            'HEAVY_RAIN': { 
+                icon: 'fas fa-cloud-showers-water', 
+                class: 'weather-rainy',
+                description: '大雨'
+            },
+            'STORM_RAIN': { 
+                icon: 'fas fa-cloud-showers-water', 
+                class: 'weather-rainy',
+                description: '暴雨'
+            },
+            // 雷暴
+            'THUNDER_SHOWER': { 
+                icon: 'fas fa-bolt', 
+                class: 'weather-thunderstorm',
+                description: '雷阵雨'
+            },
+            'HEAVY_THUNDER_SHOWER': { 
+                icon: 'fas fa-poo-storm', 
+                class: 'weather-thunderstorm',
+                description: '强雷阵雨'
+            },
+            // 雪天
+            'LIGHT_SNOW': { 
+                icon: 'fas fa-snowflake', 
+                class: 'weather-snowy',
+                description: '小雪'
+            },
+            'MODERATE_SNOW': { 
+                icon: 'fas fa-snowflake', 
+                class: 'weather-snowy',
+                description: '中雪'
+            },
+            'HEAVY_SNOW': { 
+                icon: 'fas fa-snowflake', 
+                class: 'weather-snowy',
+                description: '大雪'
+            },
+            'STORM_SNOW': { 
+                icon: 'fas fa-snowflake', 
+                class: 'weather-snowy',
+                description: '暴雪'
+            },
+            // 雨夹雪
+            'SLEET': { 
+                icon: 'fas fa-cloud-meatball', 
+                class: 'weather-snowy',
+                description: '雨夹雪'
+            },
+            // 雾
+            'LIGHT_HAZE': { 
+                icon: 'fas fa-smog', 
+                class: 'weather-fog',
+                description: '轻度雾霾'
+            },
+            'MODERATE_HAZE': { 
+                icon: 'fas fa-smog', 
+                class: 'weather-fog',
+                description: '中度雾霾'
+            },
+            'HEAVY_HAZE': { 
+                icon: 'fas fa-smog', 
+                class: 'weather-fog',
+                description: '重度雾霾'
+            },
+            'FOG': { 
+                icon: 'fas fa-smog', 
+                class: 'weather-fog',
+                description: '雾'
+            },
+            // 风
+            'WIND': { 
+                icon: 'fas fa-wind', 
+                class: 'weather-windy',
+                description: '大风'
+            },
+            // 默认
+            'DUST': { 
+                icon: 'fas fa-wind', 
+                class: 'weather-fog',
+                description: '浮尘'
+            },
+            'SAND': { 
+                icon: 'fas fa-wind', 
+                class: 'weather-fog',
+                description: '沙尘'
+            }
+        };
+        
+        // 全屏状态
+        let isFullscreen = false;
+        
+        // 初始化主题按钮
+        function initThemeButtons() {
+            themes.forEach(theme => {
+                const button = document.createElement('button');
+                button.className = 'theme-btn';
+                button.id = theme.id;
+                button.innerHTML = `<i class="${theme.icon}"></i> ${theme.name}`;
+                button.style.backgroundColor = theme.buttonColor;
+                button.style.color = theme.buttonTextColor;
+                
+                button.addEventListener('click', () => {
+                    applyTheme(theme);
+                    setActiveThemeButton(theme.id);
+                });
+                
+                themeButtonsContainer.appendChild(button);
+            });
+            
+            // 默认应用第一个主题
+            applyTheme(themes[0]);
+            setActiveThemeButton(themes[0].id);
+        }
+        
+        // 应用主题
+        function applyTheme(theme) {
+            // 设置背景色
+            bodyElement.style.backgroundColor = theme.bgColor;
+            
+            // 设置日期标签颜色
+            const dateLabels = document.querySelectorAll('.date-label');
+            dateLabels.forEach(label => {
+                label.style.color = theme.labelColor;
+            });
+            
+            // 设置星期标签颜色
+            const weekdayLabel = document.querySelector('.weekday-label');
+            weekdayLabel.style.color = theme.labelColor;
+            
+            // 设置时间标签颜色
+            const timeLabel = document.querySelector('.time-label');
+            timeLabel.style.color = theme.labelColor;
+            
+            // 设置日期显示容器的背景色
+            dateDisplayElement.style.backgroundColor = theme.buttonColor;
+            dateDisplayElement.style.borderColor = `rgba(${hexToRgb(theme.labelColor)}, 0.3)`;
+            
+            // 设置天气区域背景色
+            weatherSectionElement.style.backgroundColor = theme.buttonColor;
+            weatherSectionElement.style.borderColor = `rgba(${hexToRgb(theme.labelColor)}, 0.3)`;
+            
+            // 设置主题区域背景色
+            themesSectionElement.style.backgroundColor = theme.buttonColor;
+            themesSectionElement.style.borderColor = `rgba(${hexToRgb(theme.labelColor)}, 0.3)`;
+            
+            // 设置分隔符颜色
+            const separators = document.querySelectorAll('.separator');
+            separators.forEach(separator => {
+                separator.style.color = `rgba(${hexToRgb(theme.labelColor)}, 0.7)`;
+            });
+            
+            // 设置时间分隔符颜色
+            const timeSeparators = document.querySelectorAll('.time-separator');
+            timeSeparators.forEach(separator => {
+                separator.style.color = `rgba(${hexToRgb(theme.labelColor)}, 0.7)`;
+            });
+            
+            // 设置全屏按钮颜色
+            fullscreenBtn.style.background = theme.buttonColor;
+            fullscreenBtn.style.color = theme.labelColor;
+            
+            // 设置全屏天气区域背景色
+            fullscreenWeatherElement.style.backgroundColor = theme.buttonColor;
+            fullscreenWeatherElement.style.borderColor = `rgba(${hexToRgb(theme.labelColor)}, 0.3)`;
+        }
+        
+        // 设置活动主题按钮
+        function setActiveThemeButton(themeId) {
+            // 移除所有按钮的active类
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // 为当前主题按钮添加active类
+            document.getElementById(themeId).classList.add('active');
+        }
+        
+        // 十六进制颜色转RGB数组
+        function hexToRgbArray(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? 
+                [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)] 
+                : [147, 197, 253];
+        }
+        
+        // 十六进制颜色转RGB字符串
+        function hexToRgb(hex) {
+            const rgb = hexToRgbArray(hex);
+            return `${rgb[0]}, ${rgb[1]}, ${rgb[2]}`;
+        }
+        
+        // 更新日期
+        function updateDate() {
+            const now = new Date();
+            
+            // 更新年、月、日
+            yearElement.textContent = now.getFullYear();
+            monthElement.textContent = String(now.getMonth() + 1).padStart(2, '0');
+            dayElement.textContent = String(now.getDate()).padStart(2, '0');
+            
+            // 更新星期
+            weekdayElement.textContent = weekdays[now.getDay()];
+        }
+        
+        // 更新实时时间
+        function updateTime() {
+            const now = new Date();
+            
+            // 获取时、分、秒
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+            
+            // 更新显示
+            hoursElement.textContent = String(hours).padStart(2, '0');
+            minutesElement.textContent = String(minutes).padStart(2, '0');
+            secondsElement.textContent = String(seconds).padStart(2, '0');
+        }
+        
+  // 获取心知天气数据 - 修复版本
+async function fetchXinzhiWeatherData() {
+    try {
+        console.log('开始获取东莞天气数据...');
+        
+        // 构建API URL
+        const nowUrl = `https://api.seniverse.com/v3/weather/now.json?key=${XINZHI_API_KEY}&location=${CITY_NAME}&language=zh-Hans&unit=c`;
+        const forecastUrl = `https://api.seniverse.com/v3/weather/daily.json?key=${XINZHI_API_KEY}&location=${CITY_NAME}&language=zh-Hans&unit=c&start=0&days=5`;
+
+        console.log('当前天气API URL:', nowUrl);
+        
+        // 获取当前天气
+        const nowResponse = await fetch(nowUrl);
+        if (!nowResponse.ok) {
+            throw new Error(`网络请求失败: ${nowResponse.status} ${nowResponse.statusText}`);
+        }
+        
+        const nowData = await nowResponse.json();
+        console.log('当前天气API响应:', nowData);
+        
+        // 修复：检查API响应结构
+        if (!nowData.results || !nowData.results[0]) {
+            throw new Error(`API返回数据格式错误: ${JSON.stringify(nowData)}`);
+        }
+        
+        // 获取天气预报
+        console.log('天气预报API URL:', forecastUrl);
+        const forecastResponse = await fetch(forecastUrl);
+        
+        let forecastData;
+        if (forecastResponse.ok) {
+            forecastData = await forecastResponse.json();
+            console.log('天气预报API响应:', forecastData);
+        } else {
+            console.warn('获取天气预报失败，仅使用当前天气数据');
+            forecastData = null;
+        }
+        
+        // 处理天气数据
+        const processedData = processXinzhiWeatherData(nowData.results[0], forecastData ? forecastData.results[0] : null);
+        
+        // 存储最后一次成功的数据
+        lastWeatherData = processedData;
+        lastUpdateTime = new Date();
+        
+        console.log('天气数据处理完成:', processedData);
+        return processedData;
+        
+    } catch (error) {
+        console.error('获取心知天气数据失败:', error.message);
+        
+        // 如果有上次成功的数据，返回上次的数据
+        if (lastWeatherData) {
+            console.log('使用最后一次获取的天气数据');
+            return lastWeatherData;
+        }
+        
+        // 如果没有历史数据，返回模拟数据作为后备
+        console.log('使用模拟天气数据作为后备');
+        return getMockWeatherData();
+        }
+        
+        // 如果没有历史数据，返回模拟数据作为后备
+        console.log('使用模拟天气数据作为后备');
+        return getMockWeatherData();
+    }
+        
+        // 处理心知天气数据
+        function processXinzhiWeatherData(currentData, forecastData) {
+    const now = currentData.now;
+    const location = currentData.location;
+    
+    console.log('当前天气数据:', now); // 添加调试日志
+    
+    // 获取天气图标信息
+    const weatherCode = now.code;
+    const weatherIconInfo = getXinzhiWeatherIcon(weatherCode);
+    
+    // 处理当前天气 - 修复字段缺失问题
+    const current = {
+        temp: now.temperature ? Math.round(parseFloat(now.temperature)) : 20,
+        weather: now.text || '未知',
+        icon: weatherIconInfo.icon,
+        iconClass: weatherIconInfo.class,
+        description: weatherIconInfo.description,
+        // 使用安全的属性访问
+        humidity: now.humidity ? parseInt(now.humidity) : 
+                  (now.precip ? Math.round(parseFloat(now.precip) * 100) : 50), // 如果没有湿度，尝试用降水推算
+        windSpeed: now.wind_speed ? Math.round(parseFloat(now.wind_speed)) : 
+                   (now.windSpeed ? Math.round(parseFloat(now.windSpeed)) : 10), // 尝试不同字段名
+        windDir: now.wind_direction || now.windDirection || '东南风',
+        pressure: now.pressure ? Math.round(parseFloat(now.pressure)) : 1013,
+        visibility: now.visibility ? parseFloat(now.visibility) : 10,
+        feelsLike: now.temperature ? Math.round(parseFloat(now.temperature)) : 20
+    };
+    
+    console.log('处理后的当前天气:', current); // 添加调试日志
+    
+    // 处理天气预报
+    let forecast = [];
+    if (forecastData && forecastData.daily && forecastData.daily.length > 0) {
+        // 跳过今天，从明天开始
+        for (let i = 1; i < Math.min(4, forecastData.daily.length); i++) {
+            const day = forecastData.daily[i];
+            const dayWeatherCode = day.code_day || day.code;
+            const weatherIconInfo = getXinzhiWeatherIcon(dayWeatherCode);
+            
+            // 创建日期对象
+            const date = new Date(day.date);
+            
+            forecast.push({
+                date: formatDate(date),
+                tempMin: day.low ? Math.round(parseFloat(day.low)) : 18,
+                tempMax: day.high ? Math.round(parseFloat(day.high)) : 25,
+                icon: weatherIconInfo.icon,
+                iconClass: weatherIconInfo.class.replace('weather-', 'forecast-'),
+                weather: day.text_day || day.text || '未知',
+                description: weatherIconInfo.description,
+                humidity: day.humidity || 65,
+                windSpeed: day.wind_speed ? Math.round(parseFloat(day.wind_speed)) : 10,
+                windDir: day.wind_direction || '东南风',
+                pressure: day.pressure || 1013
+            });
+        }
+    } else {
+        // 如果没有预报数据，生成模拟预报
+        forecast = getMockForecastData();
+    }
+    
+    return {
+        current: current,
+        forecast: forecast,
+        location: location.name,
+        lastUpdate: new Date()
+            };
+        }
+        
+        // 获取模拟天气数据（作为API失败时的后备）
+        function getMockWeatherData() {
+            const now = new Date();
+            const currentHour = now.getHours();
+            const isNightTime = currentHour >= 18 || currentHour < 6;
+            
+            // 根据当前时间选择天气类型
+            let weatherType, temp;
+            const month = now.getMonth();
+            
+            if (month >= 10 || month <= 2) {
+                // 冬季（11月到2月）
+                weatherType = isNightTime ? 'CLEAR_NIGHT' : 'CLEAR_DAY';
+                temp = isNightTime ? 15 : 22;
+            } else if (month >= 3 && month <= 5) {
+                // 春季（3月到5月）
+                weatherType = isNightTime ? 'PARTLY_CLOUDY_NIGHT' : 'PARTLY_CLOUDY_DAY';
+                temp = isNightTime ? 18 : 25;
+            } else if (month >= 6 && month <= 8) {
+                // 夏季（6月到8月）
+                weatherType = 'CLOUDY';
+                temp = isNightTime ? 28 : 32;
+            } else {
+                // 秋季（9月到10月）
+                weatherType = isNightTime ? 'CLEAR_NIGHT' : 'CLEAR_DAY';
+                temp = isNightTime ? 20 : 27;
+            }
+            
+            const weatherIconInfo = xinzhiWeatherCodeToIcon[weatherType] || xinzhiWeatherCodeToIcon['CLOUDY'];
+            
+            return {
+                current: {
+                    temp: temp,
+                    weather: weatherIconInfo.description,
+                    icon: weatherIconInfo.icon,
+                    iconClass: weatherIconInfo.class,
+                    description: weatherIconInfo.description,
+                    humidity: 65,
+                    windSpeed: 12,
+                    windDir: '东南风',
+                    pressure: 1013,
+                    visibility: 10,
+                    feelsLike: temp + 1
+                },
+                forecast: getMockForecastData(),
+                location: '东莞市',
+                lastUpdate: new Date()
+            };
+        }
+        
+        // 获取模拟预报数据
+        function getMockForecastData() {
+            const forecast = [];
+            const now = new Date();
+            const month = now.getMonth();
+            
+            // 根据季节确定基础温度
+            let baseTemp;
+            if (month >= 10 || month <= 2) {
+                baseTemp = 20; // 冬季
+            } else if (month >= 3 && month <= 5) {
+                baseTemp = 24; // 春季
+            } else if (month >= 6 && month <= 8) {
+                baseTemp = 30; // 夏季
+            } else {
+                baseTemp = 26; // 秋季
+            }
+            
+            const weatherTypes = ['CLEAR_DAY', 'PARTLY_CLOUDY_DAY', 'CLOUDY', 'LIGHT_RAIN'];
+            
+            for (let i = 1; i <= 3; i++) {
+                const date = new Date();
+                date.setDate(date.getDate() + i);
+                
+                const weatherType = weatherTypes[i % weatherTypes.length];
+                const weatherIconInfo = xinzhiWeatherCodeToIcon[weatherType] || xinzhiWeatherCodeToIcon['CLOUDY'];
+                
+                forecast.push({
+                    date: formatDate(date),
+                    tempMin: baseTemp - 3 + i,
+                    tempMax: baseTemp + 3 + i,
+                    icon: weatherIconInfo.icon,
+                    iconClass: weatherIconInfo.class.replace('weather-', 'forecast-'),
+                    weather: weatherIconInfo.description,
+                    description: weatherIconInfo.description,
+                    humidity: 60 + i * 5,
+                    windSpeed: 10 + i * 2,
+                    windDir: '东南风',
+                    pressure: 1010 + i * 2
+                });
+            }
+            
+            return forecast;
+        }
+        
+        // 根据心知天气代码获取图标
+        function getXinzhiWeatherIcon(code) {
+            // 心知天气代码映射
+            const codeMap = {
+                '0': 'CLEAR_DAY',      // 晴天
+                '1': 'CLEAR_NIGHT',    // 晴夜
+                '2': 'PARTLY_CLOUDY_DAY', // 多云
+                '3': 'PARTLY_CLOUDY_NIGHT', // 多云
+                '4': 'CLOUDY',         // 阴天
+                '5': 'CLEAR_DAY',      // 晴间多云（按晴天处理）
+                '6': 'CLEAR_NIGHT',    // 晴间多云（按晴夜处理）
+                '7': 'PARTLY_CLOUDY_DAY', // 大部多云
+                '8': 'PARTLY_CLOUDY_NIGHT', // 大部多云
+                '9': 'CLOUDY',         // 阴
+                '10': 'LIGHT_RAIN',    // 小雨
+                '11': 'MODERATE_RAIN', // 中雨
+                '12': 'HEAVY_RAIN',    // 大雨
+                '13': 'STORM_RAIN',    // 暴雨
+                '14': 'LIGHT_SNOW',    // 小雪
+                '15': 'MODERATE_SNOW', // 中雪
+                '16': 'HEAVY_SNOW',    // 大雪
+                '17': 'STORM_SNOW',    // 暴雪
+                '18': 'SLEET',         // 雨夹雪
+                '19': 'LIGHT_HAZE',    // 雾
+                '20': 'FOG',           // 雾
+                '21': 'LIGHT_HAZE',    // 霾
+                '22': 'MODERATE_HAZE', // 中度霾
+                '23': 'HEAVY_HAZE',    // 重度霾
+                '24': 'SAND',          // 沙尘
+                '25': 'DUST',          // 浮尘
+                '26': 'WIND',          // 大风
+                '27': 'THUNDER_SHOWER', // 雷阵雨
+                '28': 'HEAVY_THUNDER_SHOWER', // 强雷阵雨
+                '29': 'HAZE',          // 霾
+                '30': 'LIGHT_HAZE',    // 未知，按轻度雾霾处理
+                '31': 'CLEAR_DAY',     // 热
+                '32': 'CLEAR_DAY',     // 冷
+                '33': 'CLEAR_NIGHT',   // 未知夜晚
+                '34': 'CLEAR_DAY',     // 未知白天
+                '35': 'CLEAR_NIGHT',   // 未知夜晚
+                '36': 'CLEAR_DAY',     // 未知白天
+                '37': 'CLEAR_NIGHT',   // 未知夜晚
+                '38': 'CLEAR_DAY',     // 未知白天
+                '99': 'CLOUDY'         // 未知
+            };
+            
+            const weatherType = codeMap[code] || 'CLOUDY';
+            
+            if (xinzhiWeatherCodeToIcon[weatherType]) {
+                return xinzhiWeatherCodeToIcon[weatherType];
+            }
+            
+            // 默认返回多云图标
+            return { 
+                icon: 'fas fa-cloud', 
+                class: 'weather-cloudy',
+                description: '多云'
+            };
+        }
+        
+        // 格式化日期
+        function formatDate(date) {
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            const weekday = weekdays[date.getDay()];
+            return `${month}月${day}日 星期${weekday}`;
+        }
+        
+        // 更新天气显示
+        async function updateWeather() {
+            // 显示加载状态
+            currentWeatherElement.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+            forecastContainerElement.innerHTML = '';
+            
+            const weatherData = await fetchXinzhiWeatherData();
+            
+            if (!weatherData) {
+                const errorHtml = `
+                    <div class="weather-info">天气数据加载失败</div>
+                    <div class="weather-info" style="font-size: 1.2rem; margin-top: 10px;">
+                        请检查网络连接或API配置
+                    </div>
+                `;
+                currentWeatherElement.innerHTML = errorHtml;
+                
+                // 更新全屏天气显示
+                updateFullscreenWeather(null);
+                return;
+            }
+            
+            // 更新当前天气
+            updateCurrentWeather(weatherData.current, weatherData.location);
+            
+            // 更新天气预报
+            updateWeatherForecast(weatherData.forecast);
+            
+            // 更新全屏天气显示
+            updateFullscreenWeather(weatherData.current);
+        }
+        
+        // 更新当前天气
+        function updateCurrentWeather(current, location) {
+            currentWeatherElement.innerHTML = `
+                <div class="current-weather-main">
+                    <div class="weather-icon ${current.iconClass}">
+                        <i class="${current.icon}"></i>
+                    </div>
+                    <div class="weather-temp">${current.temp}°C</div>
+                </div>
+                <div class="weather-info">${location} · ${current.weather} | 体感温度 ${current.feelsLike}°C</div>
+                <div class="weather-details">
+                    <div class="weather-detail-item">
+                        <div class="weather-detail-label">湿度</div>
+                        <div class="weather-detail-value">${current.humidity}%</div>
+                    </div>
+                    <div class="weather-detail-item">
+                        <div class="weather-detail-label">风速</div>
+                        <div class="weather-detail-value">${current.windSpeed} km/h</div>
+                    </div>
+                    <div class="weather-detail-item">
+                        <div class="weather-detail-label">风向</div>
+                        <div class="weather-detail-value">${current.windDir}</div>
+                    </div>
+                    <div class="weather-detail-item">
+                        <div class="weather-detail-label">气压</div>
+                        <div class="weather-detail-value">${current.pressure} hPa</div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 更新天气预报
+        function updateWeatherForecast(forecast) {
+            forecastContainerElement.innerHTML = '';
+            
+            forecast.forEach(day => {
+                const forecastDayElement = document.createElement('div');
+                forecastDayElement.className = 'forecast-day';
+                forecastDayElement.innerHTML = `
+                    <div class="forecast-date">${day.date}</div>
+                    <div class="forecast-weather">
+                        <div class="forecast-icon ${day.iconClass}">
+                            <i class="${day.icon}"></i>
+                        </div>
+                        <div class="forecast-temp">${day.tempMax}°/${day.tempMin}°</div>
+                    </div>
+                    <div class="forecast-desc">${day.description}</div>
+                    <div class="forecast-details">
+                        <div class="forecast-detail-item">
+                            <div class="forecast-detail-label">湿度</div>
+                            <div class="forecast-detail-value">${day.humidity}%</div>
+                        </div>
+                        <div class="forecast-detail-item">
+                            <div class="forecast-detail-label">风速</div>
+                            <div class="forecast-detail-value">${day.windSpeed} km/h</div>
+                        </div>
+                        <div class="forecast-detail-item">
+                            <div class="forecast-detail-label">风向</div>
+                            <div class="forecast-detail-value">${day.windDir}</div>
+                        </div>
+                        <div class="forecast-detail-item">
+                            <div class="forecast-detail-label">气压</div>
+                            <div class="forecast-detail-value">${day.pressure} hPa</div>
+                        </div>
+                    </div>
+                `;
+                
+                forecastContainerElement.appendChild(forecastDayElement);
+            });
+        }
+        
+        // 更新全屏天气显示
+        function updateFullscreenWeather(current) {
+            if (!current) {
+                // 如果没有天气数据
+                fullscreenWeatherIconElement.innerHTML = '<i class="fas fa-cloud-sun"></i>';
+                fullscreenWeatherIconElement.className = 'fullscreen-weather-icon weather-cloudy';
+                fullscreenWeatherTempElement.textContent = '--°C';
+                fullscreenWeatherInfoElement.textContent = '天气数据加载中...';
+                fullscreenWeatherDetailsElement.innerHTML = '';
+                return;
+            }
+            
+            // 更新图标
+            fullscreenWeatherIconElement.innerHTML = `<i class="${current.icon}"></i>`;
+            fullscreenWeatherIconElement.className = `fullscreen-weather-icon ${current.iconClass}`;
+            
+            // 更新温度
+            fullscreenWeatherTempElement.textContent = `${current.temp}°C`;
+            
+            // 更新天气信息
+            fullscreenWeatherInfoElement.textContent = `${current.weather} | 体感 ${current.feelsLike}°C`;
+            
+            // 更新天气详情
+            fullscreenWeatherDetailsElement.innerHTML = `
+                <div class="fullscreen-weather-detail">
+                    <div class="fullscreen-weather-detail-label">湿度</div>
+                    <div class="fullscreen-weather-detail-value">${current.humidity}%</div>
+                </div>
+                <div class="fullscreen-weather-detail">
+                    <div class="fullscreen-weather-detail-label">风速</div>
+                    <div class="fullscreen-weather-detail-value">${current.windSpeed} km/h</div>
+                </div>
+                <div class="fullscreen-weather-detail">
+                    <div class="fullscreen-weather-detail-label">风向</div>
+                    <div class="fullscreen-weather-detail-value">${current.windDir}</div>
+                </div>
+                <div class="fullscreen-weather-detail">
+                    <div class="fullscreen-weather-detail-label">气压</div>
+                    <div class="fullscreen-weather-detail-value">${current.pressure} hPa</div>
+                </div>
+            `;
+        }
+        
+        // 切换全屏模式
+        function toggleFullscreen() {
+            if (!isFullscreen) {
+                // 进入全屏模式
+                bodyElement.classList.add('fullscreen-mode');
+                fullscreenIcon.className = 'fas fa-compress';
+                fullscreenBtn.title = '退出全屏模式';
+                isFullscreen = true;
+                
+                // 隐藏其他元素
+                headerElement.style.opacity = '0';
+                weatherSectionElement.style.opacity = '0';
+                themesSectionElement.style.opacity = '0';
+                footerElement.style.opacity = '0';
+                
+                setTimeout(() => {
+                    headerElement.style.display = 'none';
+                    weatherSectionElement.style.display = 'none';
+                    themesSectionElement.style.display = 'none';
+                    footerElement.style.display = 'none';
+                }, 500);
+                
+                // 显示全屏天气
+                fullscreenWeatherElement.style.display = 'flex';
+                
+                // 尝试使用全屏API（如果浏览器支持）
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen();
+                } else if (document.documentElement.webkitRequestFullscreen) {
+                    document.documentElement.webkitRequestFullscreen();
+                } else if (document.documentElement.msRequestFullscreen) {
+                    document.documentElement.msRequestFullscreen();
+                }
+            } else {
+                // 退出全屏模式
+                bodyElement.classList.remove('fullscreen-mode');
+                fullscreenIcon.className = 'fas fa-expand';
+                fullscreenBtn.title = '切换全屏模式';
+                isFullscreen = false;
+                
+                // 显示其他元素
+                headerElement.style.display = '';
+                weatherSectionElement.style.display = '';
+                themesSectionElement.style.display = '';
+                footerElement.style.display = '';
+                
+                setTimeout(() => {
+                    headerElement.style.opacity = '1';
+                    weatherSectionElement.style.opacity = '1';
+                    themesSectionElement.style.opacity = '1';
+                    footerElement.style.opacity = '1';
+                }, 10);
+                
+                // 隐藏全屏天气
+                fullscreenWeatherElement.style.display = 'none';
+                
+                // 退出全屏API
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+            }
+        }
+        
+        // 监听全屏变化事件
+        function handleFullscreenChange() {
+            if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+                // 用户退出了全屏模式
+                bodyElement.classList.remove('fullscreen-mode');
+                fullscreenIcon.className = 'fas fa-expand';
+                fullscreenBtn.title = '切换全屏模式';
+                isFullscreen = false;
+                
+                // 显示其他元素
+                headerElement.style.display = '';
+                weatherSectionElement.style.display = '';
+                themesSectionElement.style.display = '';
+                footerElement.style.display = '';
+                
+                setTimeout(() => {
+                    headerElement.style.opacity = '1';
+                    weatherSectionElement.style.opacity = '1';
+                    themesSectionElement.style.opacity = '1';
+                    footerElement.style.opacity = '1';
+                }, 10);
+                
+                // 隐藏全屏天气
+                fullscreenWeatherElement.style.display = 'none';
+            }
+        }
+        
+        // 监听键盘事件（ESC键退出全屏）
+        function handleKeydown(e) {
+            if (e.key === 'Escape' || e.key === 'Esc' || e.keyCode === 27) {
+                if (isFullscreen) {
+                    toggleFullscreen();
+                }
+            }
+            
+            // F11键也支持全屏切换
+            if (e.key === 'F11') {
+                e.preventDefault(); // 阻止浏览器默认的F11全屏行为
+                toggleFullscreen();
+            }
+            
+            // 空格键也可以切换全屏（可选）
+            if (e.key === ' ' && isFullscreen) {
+                e.preventDefault();
+                toggleFullscreen();
+            }
+        }
+        
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            initThemeButtons();
+            updateDate();
+            updateTime(); // 初始更新时间
+            updateWeather(); // 初始获取天气数据
+            
+            // 启动实时时间更新（每秒更新一次）
+            setInterval(updateTime, 1000);
+            
+            // 每30分钟更新一次天气数据
+            setInterval(updateWeather, 30 * 60 * 1000);
+            
+            // 设置全屏按钮事件
+            fullscreenBtn.addEventListener('click', toggleFullscreen);
+            
+            // 监听全屏变化事件
+            document.addEventListener('fullscreenchange', handleFullscreenChange);
+            document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+            document.addEventListener('msfullscreenchange', handleFullscreenChange);
+            
+            // 监听键盘事件
+            document.addEventListener('keydown', handleKeydown);
+            
+            // 每天午夜更新日期
+            const now = new Date();
+            const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+            const timeUntilMidnight = tomorrow - now;
+            
+            setTimeout(() => {
+                updateDate();
+                // 之后每24小时更新一次
+                setInterval(updateDate, 24 * 60 * 60 * 1000);
+            }, timeUntilMidnight);
+        });
+    </script>
+</body>
+</html>
